@@ -16,9 +16,10 @@ cloudinary.config({
 // Signup
 const signup = async (req, res) => {
   try {
-    const { email, password, name } = req.body
+    const defaultProfilePic = "https://uyjtpceeqsxyeynxtsfw.supabase.co/storage/v1/object/public/Profile-Imgs/profile-1.png"
+    const { email, password, name ,profilePicURL } = req.body
     const hashedPassword = bcrypt.hashSync(password, 8)
-    const profileImage = req.file ? req.file.path : null
+    
 
     // generate email token
     const emailToken = jwt.sign({ email }, EMAIL_SECRET )
@@ -30,7 +31,7 @@ const signup = async (req, res) => {
       password: hashedPassword,
       role: "user",
       emailVerified: false,
-      profileImage,
+       profilePicURL: profilePicURL || defaultProfilePic,
       createdAt: new Date(),
       emailToken
     }
