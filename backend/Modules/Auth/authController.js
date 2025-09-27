@@ -22,7 +22,7 @@ const signup = async (req, res) => {
 
     // generate email token
     const emailToken = jwt.sign({ email }, EMAIL_SECRET )
-    const verificationLink = `${process.env.BASE_URL}/auth/verify-email?token=${emailToken}`
+    const verificationLink = `${process.env.BASE_URL}/verify-email?token=${emailToken}`
 
     const newUser = {
       name,
