@@ -1,17 +1,9 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
-import { v2 as cloudinary } from "cloudinary"
 import usersCollection from "../../Database/Models/userModel.js"
 
-const JWT_SECRET = process.env.JWT_SECRET || "secret_key_123"
 const EMAIL_SECRET = process.env.EMAIL_SECRET || "email_secret_123"
 
-// Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_NAME,
-  api_key: process.env.CLOUDINARY_KEY,
-  api_secret: process.env.CLOUDINARY_SECRET
-})
 
 // Signup
 const signup = async (req, res) => {
@@ -87,7 +79,7 @@ const login = async (req, res) => {
     if (!user.emailVerified) return res.status(403).send({ error: "Please verify your email first" })
 
     // generate JWT
-    const token = jwt.sign({ userId: userDoc.id, role: user.role }, JWT_SECRET )
+    const token = jwt.sign({ userId: userDoc.id, role: user.role }, "test-key" )
 
     res.status(200).send({ message: "Login successful", token, userId: userDoc.id, user })
   } catch (err) {
@@ -96,5 +88,3 @@ const login = async (req, res) => {
 }
 
 export { signup, login, verifyEmail }
-
-

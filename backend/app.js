@@ -1,6 +1,7 @@
 import dotenv from "dotenv"
 import express from "express"
 import authRoutes from "./Modules/Auth/authRoutes.js";
+import userRoutes from "./Modules/Users/userRoutes.js";
 
 
 dotenv.config()
@@ -9,6 +10,7 @@ dotenv.config()
 const app = express();
 app.use(express.json())
 app.use(authRoutes)
+app.use(userRoutes)
 
 
 
