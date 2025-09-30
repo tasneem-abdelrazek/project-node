@@ -24,18 +24,7 @@ const createNewPost = async (req, res) => {
 // Get All Posts
 const getAllPosts = async (req, res) => {
   try {
-    const { q } = req.query
-    let snapshot
-
-    if (q) {
-      // Search by content
-      snapshot = await postsCollection
-        .where("content", ">=", q)
-        .where("content", "<=", q + "\uf8ff")
-        .get()
-    } else {
-      snapshot = await postsCollection.get()
-    }
+    const snapshot = await postsCollection.get()
 
     const posts = []
     snapshot.forEach((doc) => {
@@ -51,21 +40,49 @@ const getAllPosts = async (req, res) => {
 // Update Post
 const updatePost = async (req, res) => {
   try {
-    await postsCollection.doc(req.params.id).update(req.body)
-    res.send("Post Updated")
+    const postRef = postsCollection.doc(req.params.id);
+    const doc = await postRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).send({ error: "Post not found" });
+    }
+
+    const post = doc.data();
+
+    // If user is not admin, check ownership
+    if (req.user.role !== "admin" && post.creator !== req.user.userId) {
+      return res.status(403).send({ error: "Forbidden: You can only update your own posts" });
+    }
+
+    await postRef.update(req.body);
+    res.send("Post Updated");
   } catch (err) {
-    res.status(500).send({ error: err.message })
+    res.status(500).send({ error: err.message });
   }
-}
+};
 
 // Delete Post
 const deletePost = async (req, res) => {
   try {
-    await postsCollection.doc(req.params.id).delete()
-    res.send("Post Deleted")
+    const postRef = postsCollection.doc(req.params.id);
+    const doc = await postRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).send({ error: "Post not found" });
+    }
+
+    const post = doc.data();
+
+    // If user is not admin, check ownership
+    if (req.user.role !== "admin" && post.creator !== req.user.userId) {
+      return res.status(403).send({ error: "Forbidden: You can only delete your own posts" });
+    }
+
+    await postRef.delete();
+    res.send("Post Deleted");
   } catch (err) {
-    res.status(500).send({ error: err.message })
+    res.status(500).send({ error: err.message });
   }
-}
+};
 
 export { createNewPost, getAllPosts, updatePost, deletePost }
