@@ -3,6 +3,7 @@ import express from "express"
 import authRoutes from "./Modules/Auth/authRoutes.js";
 import userRoutes from "./Modules/Users/userRoutes.js";
 import PostRoutes from "./Modules/Posts/postRoutes.js";
+import commentRouter from "./Modules/Comments/commentRoutes.js";
 
 
 dotenv.config()
@@ -13,6 +14,7 @@ app.use(express.json())
 app.use(authRoutes)
 app.use(userRoutes)
 app.use(PostRoutes)
+app.use("/comments", commentRouter);
 
 
 
